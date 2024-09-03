@@ -1,0 +1,70 @@
+name: Sanitize comment
+description: GitHub Action to sanitize suspicious comments
+branding:
+  icon: crosshair
+  color: red
+runs:
+  using: composite
+  steps:
+    - uses: actions/github-script@v7
+      with:
+        script: |
+          const preamble = "> [!CAUTION]\n> This comment may contain links to malicious content. **DO NOT** follow any links below\n\n";
+          const replacer = (url) => url.replace('.', '(dot)');
+          const patterns = [
+            /(\w+\.)?mega\.((co\.)?nz|io)/,
+            /(app\.|www\.)?mediafire\.com/,
+            /(www\.)?(onedrive|1drv)\.com/,
+            /(www\.)?box\.com/,
+            /(www\.)?citrixsharefile\.com/,
+            /(www\.)?dropbox\.com/,
+            /(www\.)?hightail\.com/,
+            /(www\.)?icloud\.com/,
+            /(www\.)?icloud\.com/,
+            /(www\.)?opentext\.com/,
+            /(www\.)?sharefile\.com/,
+            /(www\.)?sugarsync\.com/,
+            /(www\.)?tresorit\.com/,
+            /bit\.ly/,
+            /bl\.ink/,
+            /buff\.ly/,
+            /clck\.ru/,
+            /cutt\.ly/,
+            /drive\.google\.com/,
+            /goo\.gl/,
+            /is\.gd/,
+            /lnkd\.in/,
+            /ow\.ly/,
+            /qr\.ae/,
+            /rb\.gy/,
+            /rebrand\.ly/,
+            /shorte\.st/,
+            /shorturl\.at/,
+            /soo\.gd/,
+            /t\.co/,
+            /t2mio/,
+            /tinyurl\.com/,
+            /tr\.im/,
+            /v\.gd/,
+          ];
+
+          const comment = context.payload.comment;
+          const { owner, repo } = context.repo;
+          const comment_id = comment.id;
+          console.log(`Repository owner: ${owner}`);
+          console.log(`Repository name: ${repo}`);
+          console.log(`Comment body: ${comment.body}`);
+
+          const pattern = new RegExp(`${/https?:\/\//.source}(${patterns.map(x => x.source).join('|')})${/\/[^\s\)]+/.source}`, 'g');
+
+          if (pattern.test(comment.body)) {
+            let body = comment.body.replace(pattern, replacer);
+            if (!comment.body.trimStart().startsWith(preamble.trim())) {
+              body = preamble + body;
+            }
+            console.log(`Updated comment body: ${body}`);
+
+            await github.rest.issues.updateComment({ owner, repo, comment_id, body });
+          } else {
+            console.log('No suspicious links found.');
+          }
