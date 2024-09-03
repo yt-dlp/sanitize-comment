@@ -12,7 +12,6 @@ runs:
           const preamble = "> [!CAUTION]\n> This comment may contain links to malicious content. **DO NOT** follow any links below\n\n";
           const replacer = (url) => url.replace('.', '(dot)');
           const patterns = [
-            /(\w+\.)?mega\.((co\.)?nz|io)/,
             /(app\.|www\.)?mediafire\.com/,
             /(www\.)?(onedrive|1drv)\.com/,
             /(www\.)?box\.com/,
@@ -21,6 +20,7 @@ runs:
             /(www\.)?hightail\.com/,
             /(www\.)?icloud\.com/,
             /(www\.)?icloud\.com/,
+            /(www\.)?mega\.((co\.)?nz|io)/,
             /(www\.)?opentext\.com/,
             /(www\.)?sharefile\.com/,
             /(www\.)?sugarsync\.com/,
@@ -28,6 +28,7 @@ runs:
             /bit\.ly/,
             /bl\.ink/,
             /buff\.ly/,
+            /cdn\.discordapp\.com/,
             /clck\.ru/,
             /cutt\.ly/,
             /drive\.google\.com/,
