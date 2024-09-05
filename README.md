@@ -17,8 +17,10 @@ permissions:
 jobs:
   sanitize-comment:
     name: Sanitize comment
+    if: vars.SANITIZE_COMMENT
     runs-on: ubuntu-latest
     steps:
       - name: Sanitize comment
         uses: yt-dlp/sanitize-comment@v1
 ```
+In the above example, the sanitize-comment action is only triggered if the repository has a `SANITIZE_COMMENT` variable set.
