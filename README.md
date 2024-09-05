@@ -15,7 +15,8 @@ permissions:
   issues: write
 
 jobs:
-  comment-edit:
+  sanitize-comment:
+    name: Sanitize comment
     runs-on: ubuntu-latest
     steps:
       - name: Sanitize comment
