@@ -58,7 +58,7 @@ runs:
           console.log(`Repository name: ${repo}`);
           console.log(`Comment body: ${comment.body}`);
 
-          const pattern = new RegExp(`(https?://|[\\s(<])${patterns.map(x => x.source).join('|')}/`, 'g');
+          const pattern = new RegExp(`(https?://|[\\s(<])(${patterns.map(x => x.source).join('|')})/`, 'g');
 
           if (pattern.test(comment.body)) {
             let body = comment.body.replace(pattern, replacer);
