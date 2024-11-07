@@ -13,7 +13,7 @@ runs:
           const replacer = (url) => url.replace('.', '(dot)');
           const patterns = [
             /(app\.|www\.)?mediafire\.com/,
-            /(www\.)?(onedrive|1drv)\.com/,
+            /(www\.)?(onedrive|1drv)\.(com|ms)/,
             /(www\.)?box\.com/,
             /(www\.)?citrixsharefile\.com/,
             /(www\.)?dropbox\.com/,
