@@ -56,6 +56,9 @@ runs:
           const comment_id = comment.id;
           console.log(`Repository owner: ${owner}`);
           console.log(`Repository name: ${repo}`);
+          console.log(`Comment ID: ${comment_id}`);
+          console.log(`Comment author: ${JSON.stringify(comment.user.login)}`);
+          console.log(`Comment author ID: ${comment.user.id}`);
 
           const pattern = new RegExp(`(https?://|[\\s(<])(${patterns.map(x => x.source).join('|')})/`, 'g');
 
