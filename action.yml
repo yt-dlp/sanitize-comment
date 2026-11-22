@@ -63,17 +63,17 @@ runs:
           console.log(`Comment author ID: ${comment.user.id}`);
 
           if (owner === commenter) {
-            const exempt = true;
+            var exempt = true;
           } else {
             try {
               const response = await github.rest.orgs.checkMembershipForUser({
                 org: owner,
                 username: commenter
               });
-              const exempt = response.status === 204;
+              var exempt = response.status === 204;
             } catch (error) {
               console.log(`Got HTTP Error ${JSON.stringify(error.status)} for org membership check`);
-              const exempt = false;
+              var exempt = false;
             }
           }
 
