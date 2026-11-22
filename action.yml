@@ -8,6 +8,7 @@ runs:
   steps:
     - uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd  # v8.0.0
       with:
+        retries: 3
         script: |
           const preamble = "> [!CAUTION]\n> This comment may contain links to malicious content. **DO NOT** follow any links below\n\n";
           const replacer = (url) => url.replace('.', '(dot)');
@@ -54,23 +55,43 @@ runs:
           const comment = context.payload.comment;
           const { owner, repo } = context.repo;
           const comment_id = comment.id;
+          const commenter = comment.user.login;
           console.log(`Repository owner: ${owner}`);
           console.log(`Repository name: ${repo}`);
           console.log(`Comment ID: ${comment_id}`);
-          console.log(`Comment author: ${JSON.stringify(comment.user.login)}`);
+          console.log(`Comment author: ${JSON.stringify(commenter)}`);
           console.log(`Comment author ID: ${comment.user.id}`);
 
-          const pattern = new RegExp(`(https?://|[\\s(<])(${patterns.map(x => x.source).join('|')})/`, 'g');
-
-          if (pattern.test(comment.body)) {
-            console.log(`Original comment body: ${JSON.stringify(comment.body)}`);
-            let body = comment.body.replace(pattern, replacer);
-            if (!comment.body.trimStart().startsWith(preamble.trim())) {
-              body = preamble + body;
-            }
-            console.log(`Updated comment body: ${JSON.stringify(body)}`);
-
-            await github.rest.issues.updateComment({ owner, repo, comment_id, body });
+          if (owner === commenter) {
+            var exempt = true;
           } else {
+            try {
+              const response = await github.rest.orgs.checkMembershipForUser({
+                org: owner,
+                username: commenter
+              });
+              var exempt = response.status === 204;
+            } catch (error) {
+              console.log(`Got HTTP Error ${JSON.stringify(error.status)} for org membership check`);
+              var exempt = false;
+            }
+          }
+
+          if (exempt) {
             console.log('No suspicious links found.');
+          } else {
+            const pattern = new RegExp(`(https?://|[\\s(<])(${patterns.map(x => x.source).join('|')})/`, 'g');
+
+            if (pattern.test(comment.body)) {
+              console.log(`Original comment body: ${JSON.stringify(comment.body)}`);
+              let body = comment.body.replace(pattern, replacer);
+              if (!comment.body.trimStart().startsWith(preamble.trim())) {
+                body = preamble + body;
+              }
+              console.log(`Updated comment body: ${JSON.stringify(body)}`);
+
+              await github.rest.issues.updateComment({ owner, repo, comment_id, body });
+            } else {
+              console.log('No suspicious links found.');
+            }
           }
