@@ -66,14 +66,14 @@ runs:
             const exempt = true;
           } else {
             try {
-                const response = await github.rest.orgs.checkMembershipForUser({
-                    org: owner,
-                    username: commenter
-                });
-                const exempt = response.status === 204;
+              const response = await github.rest.orgs.checkMembershipForUser({
+                org: owner,
+                username: commenter
+              });
+              const exempt = response.status === 204;
             } catch (error) {
-                console.log(`Got HTTP Error ${JSON.stringify(error.status)} for org membership check`);
-                const exempt = false;
+              console.log(`Got HTTP Error ${JSON.stringify(error.status)} for org membership check`);
+              const exempt = false;
             }
           }
 
